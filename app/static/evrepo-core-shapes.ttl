@@ -27,10 +27,18 @@ evrepo:InvestigationShape a sh:NodeShape ;
         sh:class evrepo:Finding ;
     ] .
 
-# --- Finding may carry any subset of Context, Outcome, Conditions, arm data, and effect estimates ---
+# --- Finding must be non-empty (at least one of the structural links present) ---
 
 evrepo:FindingShape a sh:NodeShape ;
     sh:targetClass evrepo:Finding ;
+    sh:or (
+        [ sh:path evrepo:hasContext        ; sh:minCount 1 ]
+        [ sh:path evrepo:hasOutcome        ; sh:minCount 1 ]
+        [ sh:path evrepo:hasEffectEstimate ; sh:minCount 1 ]
+        [ sh:path evrepo:evaluates         ; sh:minCount 1 ]
+        [ sh:path evrepo:comparedTo        ; sh:minCount 1 ]
+        [ sh:path evrepo:hasArmData        ; sh:minCount 1 ]
+    ) ;
     sh:property [
         sh:path evrepo:hasContext ;
         sh:class evrepo:Context ;
