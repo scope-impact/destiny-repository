@@ -28,18 +28,24 @@ evrepo:InvestigationShape a sh:NodeShape ;
         sh:minCount 1 ;
     ] .
 
-# --- Finding must have Context, Outcome, and at least one effect estimate; arm data is optional ---
+# --- Finding must be non-empty (at least one of the structural links present) ---
 
 evrepo:FindingShape a sh:NodeShape ;
     sh:targetClass evrepo:Finding ;
+    sh:or (
+        [ sh:path evrepo:hasContext        ; sh:minCount 1 ]
+        [ sh:path evrepo:hasOutcome        ; sh:minCount 1 ]
+        [ sh:path evrepo:hasEffectEstimate ; sh:minCount 1 ]
+        [ sh:path evrepo:evaluates         ; sh:minCount 1 ]
+        [ sh:path evrepo:comparedTo        ; sh:minCount 1 ]
+        [ sh:path evrepo:hasArmData        ; sh:minCount 1 ]
+    ) ;
     sh:property [
         sh:path evrepo:hasContext ;
         sh:class evrepo:Context ;
-        sh:minCount 1 ;
     ] , [
         sh:path evrepo:hasOutcome ;
         sh:class evrepo:Outcome ;
-        sh:minCount 1 ;
     ] , [
         sh:path evrepo:evaluates ;
         sh:class evrepo:Condition ;
@@ -52,7 +58,6 @@ evrepo:FindingShape a sh:NodeShape ;
     ] , [
         sh:path evrepo:hasEffectEstimate ;
         sh:class evrepo:EffectEstimate ;
-        sh:minCount 1 ;
     ] .
 
 # --- ObservedResult must link to a Condition ---
