@@ -17,6 +17,7 @@ from minio import Minio
 from opentelemetry import context, trace
 from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 from opentelemetry.trace import set_span_in_context
+from pydantic import TypeAdapter
 from sqlalchemy.ext.asyncio import AsyncSession
 from tenacity import Retrying, stop_after_attempt, wait_fixed
 from testcontainers.core.container import DockerContainer
@@ -63,7 +64,8 @@ logger_configurer.configure_console_logger(
     log_level=LogLevel.INFO, rich_rendering=False
 )
 
-if otel_config := os.getenv("OTEL_CONFIG"):
+otel_enabled = TypeAdapter(bool).validate_python(os.getenv("OTEL_ENABLED", "false"))
+if otel_enabled and (otel_config := os.getenv("OTEL_CONFIG")):
     configure_otel(
         OTelConfig.model_validate_json(otel_config),
         "e2e-runner",
@@ -370,11 +372,10 @@ def _add_env(
         .with_env("TESTS_USE_RABBITMQ", "true")
         .with_env("AZURE_APPLICATION_ID", "dummy")
         .with_env("AZURE_LOGIN_URL", "https://login.microsoftonline.com/dummy")
+        .with_env("OTEL_ENABLED", str(otel_enabled))
     )
-    if otel_config:
-        container = container.with_env("OTEL_CONFIG", otel_config).with_env(
-            "OTEL_ENABLED", os.getenv("OTEL_ENABLED", "true")
-        )
+    if otel_enabled and otel_config:
+        container = container.with_env("OTEL_CONFIG", otel_config)
     return container
 
 
