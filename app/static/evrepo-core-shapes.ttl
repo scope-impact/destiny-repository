@@ -18,28 +18,25 @@ evrepo:LinkedDataEnhancementShape a sh:NodeShape ;
         sh:minCount 1 ;
     ] .
 
-# --- Investigation must have at least one Finding ---
+# --- Investigation may have Findings ---
 
 evrepo:InvestigationShape a sh:NodeShape ;
     sh:targetClass evrepo:Investigation ;
     sh:property [
         sh:path evrepo:hasFinding ;
         sh:class evrepo:Finding ;
-        sh:minCount 1 ;
     ] .
 
-# --- Finding must have Context, Outcome, and at least one effect estimate; arm data is optional ---
+# --- Finding may carry any subset of Context, Outcome, Conditions, arm data, and effect estimates ---
 
 evrepo:FindingShape a sh:NodeShape ;
     sh:targetClass evrepo:Finding ;
     sh:property [
         sh:path evrepo:hasContext ;
         sh:class evrepo:Context ;
-        sh:minCount 1 ;
     ] , [
         sh:path evrepo:hasOutcome ;
         sh:class evrepo:Outcome ;
-        sh:minCount 1 ;
     ] , [
         sh:path evrepo:evaluates ;
         sh:class evrepo:Condition ;
@@ -52,7 +49,6 @@ evrepo:FindingShape a sh:NodeShape ;
     ] , [
         sh:path evrepo:hasEffectEstimate ;
         sh:class evrepo:EffectEstimate ;
-        sh:minCount 1 ;
     ] .
 
 # --- ObservedResult must link to a Condition ---
