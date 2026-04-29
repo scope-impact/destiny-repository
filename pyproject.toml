@@ -27,7 +27,7 @@ docs = [
     "sphinxcontrib-mermaid>=1.0.0,<2",
 ]
 test = [
-    "aiohttp>=3.13.3",
+    "aiohttp>=3.13.5",
     "factory-boy>=3.3.3",
     "httpx>=0.28.1,<0.29",
     "psycopg>=3.2.6,<4",
