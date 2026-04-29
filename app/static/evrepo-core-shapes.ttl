@@ -18,13 +18,14 @@ evrepo:LinkedDataEnhancementShape a sh:NodeShape ;
         sh:minCount 1 ;
     ] .
 
-# --- Investigation may have Findings ---
+# --- Investigation must have at least one Finding ---
 
 evrepo:InvestigationShape a sh:NodeShape ;
     sh:targetClass evrepo:Investigation ;
     sh:property [
         sh:path evrepo:hasFinding ;
         sh:class evrepo:Finding ;
+        sh:minCount 1 ;
     ] .
 
 # --- Finding must be non-empty (at least one of the structural links present) ---
