@@ -49,16 +49,27 @@ async def healthcheck(
             return "No Azure blob config provided."
 
         try:
-            async with BlobServiceClient(
-                account_url=settings.azure_blob_config.account_url,
-                credential=DefaultAzureCredential()
-                if settings.azure_blob_config.uses_managed_identity
-                else settings.azure_blob_config.credential,
-            ) as client:
-                container = client.get_container_client(
-                    settings.azure_blob_config.container
-                )
-                await container.get_container_properties()
+            if settings.azure_blob_config.uses_managed_identity:
+                # DefaultAzureCredential owns its own aiohttp session and is
+                # not closed by BlobServiceClient — we have to close it ourselves.
+                async with (
+                    DefaultAzureCredential() as credential,
+                    BlobServiceClient(
+                        account_url=settings.azure_blob_config.account_url,
+                        credential=credential,
+                    ) as client,
+                ):
+                    await client.get_container_client(
+                        settings.azure_blob_config.container
+                    ).get_container_properties()
+            else:
+                async with BlobServiceClient(
+                    account_url=settings.azure_blob_config.account_url,
+                    credential=settings.azure_blob_config.credential,
+                ) as client:
+                    await client.get_container_client(
+                        settings.azure_blob_config.container
+                    ).get_container_properties()
 
         except Exception:
             logger.exception("Blob storage connection failed.")
