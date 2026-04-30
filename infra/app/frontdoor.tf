@@ -30,7 +30,7 @@ resource "azurerm_cdn_frontdoor_origin_group" "api" {
   health_probe {
     protocol            = "Https"
     interval_in_seconds = 100
-    path                = "/v1/system/healthcheck/"
+    path                = "/v1/system/ping/"
     request_type        = "GET"
   }
 }

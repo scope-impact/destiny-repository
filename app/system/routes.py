@@ -95,6 +95,12 @@ system_utility_auth = CachingStrategyAuth(
 )
 
 
+@router.get("/ping/", status_code=status.HTTP_200_OK)
+async def get_ping() -> JSONResponse:
+    """Cheap liveness probe."""
+    return JSONResponse(content={"status": "ok"})
+
+
 @router.get("/healthcheck/", status_code=status.HTTP_200_OK)
 async def get_healthcheck(
     healthcheck_options: Annotated[HealthCheckOptions, Depends()],

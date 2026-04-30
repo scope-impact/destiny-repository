@@ -50,8 +50,6 @@ async def healthcheck(
 
         try:
             if settings.azure_blob_config.uses_managed_identity:
-                # DefaultAzureCredential owns its own aiohttp session and is
-                # not closed by BlobServiceClient — we have to close it ourselves.
                 async with (
                     DefaultAzureCredential() as credential,
                     BlobServiceClient(
