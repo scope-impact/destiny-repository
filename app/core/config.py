@@ -181,13 +181,34 @@ class BlobBackendConfig(BaseModel):
 
 
 class MinioConfig(BlobBackendConfig):
-    """Minio configuration."""
+    """
+    Minio configuration.
+
+    Also used for any S3-compatible backend, including AWS S3 itself: set `host`
+    to the service endpoint and `region` to the bucket's region.
+    """
 
     location: Literal[BlobStorageLocation.MINIO] = BlobStorageLocation.MINIO
 
     host: str
     access_key: str
     secret_key: str
+    secure: bool = Field(
+        default=True,
+        description=(
+            "Whether to use TLS when talking to the backend, and therefore whether "
+            "generated presigned URLs are https. Must be true for full text "
+            "enhancements, whose file_url is validated as https by the SDK. "
+            "Set false only for a plain-HTTP local Minio."
+        ),
+    )
+    region: str | None = Field(
+        default=None,
+        description=(
+            "The backend region, used for request signing. Leave unset for Minio; "
+            "for AWS S3 setting it avoids a GetBucketLocation lookup per client."
+        ),
+    )
 
 
 class AzureBlobConfig(BlobBackendConfig):

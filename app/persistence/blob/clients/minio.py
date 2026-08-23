@@ -41,12 +41,15 @@ class MinioBlobStorageClient(GenericBlobStorageClient):
         self.host = config.host
         self.access_key = config.access_key
         self.secret_key = config.secret_key
+        self.secure = config.secure
+        self.region = config.region
         self.presigned_url_expiry_seconds = presigned_url_expiry_seconds
         self.client = Minio(
             self.host,
             access_key=self.access_key,
             secret_key=self.secret_key,
-            secure=False,
+            secure=self.secure,
+            region=self.region,
         )
 
     @trace_blob_client_method(tracer)

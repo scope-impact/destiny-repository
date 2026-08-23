@@ -62,3 +62,35 @@ def test_blob_backend_config_requires_all_containers():
             secret_key="s",
             containers={BlobContainer.OPERATIONS: "ops"},
         )
+
+
+def test_minio_config_defaults_to_tls_without_region():
+    """TLS is on by default; region is optional and unset for Minio."""
+    config = MinioConfig(
+        host="s3.eu-north-1.amazonaws.com",
+        access_key="a",
+        secret_key="s",
+        containers={
+            BlobContainer.OPERATIONS: "ops",
+            BlobContainer.FULL_TEXTS: "full-texts",
+        },
+    )
+    assert config.secure is True
+    assert config.region is None
+
+
+def test_minio_config_accepts_plain_http_and_region():
+    """A local Minio opts out of TLS explicitly; S3 can pin its region."""
+    config = MinioConfig(
+        host="fs:9000",
+        access_key="a",
+        secret_key="s",
+        secure=False,
+        region="eu-north-1",
+        containers={
+            BlobContainer.OPERATIONS: "ops",
+            BlobContainer.FULL_TEXTS: "full-texts",
+        },
+    )
+    assert config.secure is False
+    assert config.region == "eu-north-1"
