@@ -55,10 +55,24 @@ fetcher that cannot determine `is_oa` skips and logs rather than writing a null.
 
 Two robots, in a chain that terminates by construction:
 
-1. **Fetcher** — deterministic, no model. Resolves an open-access artifact from an
-   identifier, honours machine-readable TDM reservations, uploads it, emits `full_text`.
-   Built first precisely because its failures are visible: either you got the right PDF or
-   you didn't.
+1. **Fetcher** — no model. Fetches the artifact at the address the CMS already holds,
+   honours machine-readable TDM reservations, uploads it, emits `full_text`. Built first
+   because its failures are visible: either you got the right document or you didn't.
+
+   It does **not** resolve from an identifier. Nothing here resolves anything — there is no
+   Unpaywall, OpenAlex or Crossref client in this repository, and the OpenAlex references in
+   the SDK document schema shape, not an integration. An identifier-driven fetcher would be
+   a resolver built from scratch, and against the CMS's real corpus it would reach 4 sources
+   of 44 where fetching a known URL reaches 38.
+
+   **Every artifact is a PDF**; HTML pages are exported to PDF at fetch time, so `mime_type`
+   is uniformly `application/pdf`. `mime_type` is an unconstrained string, so this is a
+   choice we make rather than a limit the schema imposes: one artifact format, one extractor
+   path, and `page_location` citations available everywhere. The costs are that a renderer
+   lives in the robot image — so the fetcher is no longer deterministic byte-for-byte — and
+   that `sha256_checksum` no longer detects that a page changed, since a renderer upgrade
+   moves it too. The fetcher therefore also records the checksum of the source HTML it
+   rendered from.
 2. **Extractor** — model-driven. Triggered by a `full_text` arriving, reads the artifact,
    emits `linked_data`. Cannot self-trigger, because its output is not a `full_text` (F8).
 
